@@ -500,14 +500,14 @@ openstack overcloud image upload --os-image-name overcloud-full-hardened.qcow2 -
 
 ```diff
 (undercloud) [stack@dell430-33-undercloud-0-16-2 harden]$ openstack image list
-+--------------------------------------+-------------------------+--------+
+|--------------------------------------+-------------------------+--------+
 | ID                                   | Name                    | Status |
-+--------------------------------------+-------------------------+--------+
+|--------------------------------------+-------------------------+--------+
 | 31e4c942-e143-4039-b1de-f1da588c64ad | overcloud-full          | active |
-+| 9c9d1321-2a3a-4c6c-9f14-27f29f4885c5 | overcloud-full-hardened | active |
++ 9c9d1321-2a3a-4c6c-9f14-27f29f4885c5 | overcloud-full-hardened | active |
 | 05f0270b-8199-4b18-ad7e-b200c64285c2 | overcloud-full-initrd   | active |
 | 2e052cb4-66a4-429f-81fb-fabc17040120 | overcloud-full-vmlinuz  | active |
-+--------------------------------------+-------------------------+--------+
+|--------------------------------------+-------------------------+--------+
 (undercloud) [stack@dell430-33-undercloud-0-16-2 harden]$
 ```
 
