@@ -304,8 +304,8 @@ mdadm --detail /dev/md127
             Events : 175
 
     Number   Major   Minor   RaidDevice State
-  +      0     252        1        0      active sync   /dev/vda1
-  +      1     252       17        1      active sync   /dev/vdb1
++        0     252        1        0      active sync   /dev/vda1
++        1     252       17        1      active sync   /dev/vdb1
 ```
 
 ```
