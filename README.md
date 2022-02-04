@@ -278,34 +278,34 @@ Personalities : [raid1]
 unused devices: <none>
 ```
 
-```
+```diff
 mdadm --detail /dev/md127
 /dev/md127:
            Version : 1.2
      Creation Time : Tue Feb  1 14:35:03 2022
-        Raid Level : raid1
+        + Raid Level : raid1
         Array Size : 62878720 (59.97 GiB 64.39 GB)
      Used Dev Size : 62878720 (59.97 GiB 64.39 GB)
-      Raid Devices : 2
-     Total Devices : 2
+      + Raid Devices : 2
+     * Total Devices : 2
        Persistence : Superblock is persistent
 
        Update Time : Tue Feb  1 16:34:26 2022
-             State : clean
-    Active Devices : 2
+            + State : clean
+    + Active Devices : 2
    Working Devices : 2
     Failed Devices : 0
      Spare Devices : 0
 
-Consistency Policy : resync
++ Consistency Policy : resync
 
               Name : host-192-168-24-24:0
               UUID : b0ba6b96:bcdba009:3288f603:7f8c8625
             Events : 175
 
     Number   Major   Minor   RaidDevice State
-       0     252        1        0      active sync   /dev/vda1
-       1     252       17        1      active sync   /dev/vdb1
+  +      0     252        1        0      active sync   /dev/vda1
+  +      1     252       17        1      active sync   /dev/vdb1
 ```
 
 ```
