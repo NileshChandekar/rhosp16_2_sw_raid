@@ -1,8 +1,9 @@
-```diff
-+ sw-raid configuration with RHOSP-16.2.1.GA
-```
+# sw-raid configuration with RHOSP-16.2.1.GA
 
-**scenario 1: Deploy all nodes with sw-raid**
+
+```diff
+- scenario 1: Deploy all nodes with sw-raid
+```
 
 * Deploy undercloud as per official documentation. [1] https://access.redhat.com/documentation/en-us/red_hat_openstack_platform/16.2/html-single/director_installation_and_usage/index
 * Registering nodes for the overcloud
