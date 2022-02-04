@@ -337,8 +337,7 @@ vdb           252:16   0   60G  0 disk
 
 
 
-
-scenerio 2: Enable sw-raid on already deployed environment. [with new role] - SCALEING COMPUTE NODE WITH SW-RAID.
+## scenerio 2: Enable sw-raid on already deployed environment. [with new role] - SCALEING COMPUTE NODE WITH SW-RAID.
 
 
 * RHOSP-16.2.1.GA is already deployed with some set of controller's and compute's
@@ -368,9 +367,10 @@ Red Hat OpenStack Platform release 16.2.1 GA (Train)
 +--------------------------------------+------------+----------------------------------+-----------------+----------------------+----------------------+
 ```
 
-* **sw-raid** configuration  starts here.
+### **sw-raid** configuration  starts here.
 
 * Required ironical configuration changes on **undercloud** node.
+
 ```
 grep  enabled_raid_interfaces /var/lib/config-data/puppet-generated/ironic/etc/ironic/ironic.conf
 
@@ -384,12 +384,9 @@ enabled_raid_interfaces=**agent**,idrac,no-raid
 sudo podman restart ironic_conductor
 ```
 
-* Set sw-raid interface on the node.
-
-
 * Import the node first:
 
-```
+```diff
 (undercloud) [stack@dell430-33-undercloud-0-16-2 ~]$ cat instackenv2.json
 {
 "nodes": [
@@ -401,7 +398,7 @@ sudo podman restart ironic_conductor
 "pm_port": "6232",
 "pm_password": "redhat",
 "pm_addr": "192.168.24.250",
-"capabilities" : "node:swcmpt-0,boot_option:local",
++ "capabilities" : "node:swcmpt-0,boot_option:local",
 "name": "overcloud-sw-raid-compute-0"
 }
 
@@ -409,6 +406,8 @@ sudo podman restart ironic_conductor
 }
 (undercloud) [stack@dell430-33-undercloud-0-16-2 ~]$
 ```
+
+* Import the node 
 
 ```
 openstack overcloud node import /home/stack/instackenv2.json
@@ -426,12 +425,14 @@ openstack overcloud node introspect --provide 5a6342b6-4386-4633-b558-ba49007898
 openstack baremetal node set --raid-interface agent  5a6342b6-4386-4633-b558-ba4900789879
 ```
 
-* * move the node into manage, for further configuration.
+* move the node into manage, for further configuration.
+
 ```
 openstack baremetal node manage  5a6342b6-4386-4633-b558-ba4900789879
 ```
 
 * Set the target configuration [sw raid]
+
 ```
 openstack baremetal node set   --target-raid-config /home/stack/sw-raid/target.yaml  5a6342b6-4386-4633-b558-ba4900789879
 ```
@@ -452,12 +453,14 @@ openstack baremetal node set   --target-raid-config /home/stack/sw-raid/target.y
 }
 ```
 
-* Clean the node before deployment,
+* Clean the node before deployment, [During this step the nodes will turn on and will start cleaning o the disk]
+
 ```
 openstack baremetal node clean  --clean-steps /home/stack/sw-raid/cleanstate.yaml 5a6342b6-4386-4633-b558-ba4900789879
 ```
 
 * Move node from manage to available. [provide]
+
 ```
 openstack baremetal node provide 5a6342b6-4386-4633-b558-ba4900789879
 ```
@@ -465,31 +468,35 @@ openstack baremetal node provide 5a6342b6-4386-4633-b558-ba4900789879
 * Set the flavor as well,
 
 ```
-openstack flavor set --property "capabilities:raid_level"="1"  0f8deb91-2a64-4025-a75e-f70e28e89491
+openstack flavor set \
+--property "capabilities:raid_level"="1"  \
+baremetal
 ```
 
 * Upload the image: [New role]
 
-```
+```diff
 (undercloud) [stack@dell430-33-undercloud-0-16-2 harden]$ ll -lhrt
 total 1.7G
 -rw-r--r--. 1 stack stack 426M Jan 27 13:44 ironic-python-agent.initramfs
 -rwxr-xr-x. 1 stack stack 9.6M Jan 27 13:44 ironic-python-agent.kernel
--rw-rw-r--. 1 stack stack 1.3G Feb  1 06:23 overcloud-full-hardened.qcow2
++ -rw-rw-r--. 1 stack stack 1.3G Feb  1 06:23 overcloud-full-hardened.qcow2
 (undercloud) [stack@dell430-33-undercloud-0-16-2 harden]$
 ```
+
+* Upload the image ot the glance. 
 
 ```
 openstack overcloud image upload --os-image-name overcloud-full-hardened.qcow2 --whole-disk
 ```
 
-```
+```diff
 (undercloud) [stack@dell430-33-undercloud-0-16-2 harden]$ openstack image list
 +--------------------------------------+-------------------------+--------+
 | ID                                   | Name                    | Status |
 +--------------------------------------+-------------------------+--------+
 | 31e4c942-e143-4039-b1de-f1da588c64ad | overcloud-full          | active |
-| 9c9d1321-2a3a-4c6c-9f14-27f29f4885c5 | overcloud-full-hardened | active |
++| 9c9d1321-2a3a-4c6c-9f14-27f29f4885c5 | overcloud-full-hardened | active |
 | 05f0270b-8199-4b18-ad7e-b200c64285c2 | overcloud-full-initrd   | active |
 | 2e052cb4-66a4-429f-81fb-fabc17040120 | overcloud-full-vmlinuz  | active |
 +--------------------------------------+-------------------------+--------+
@@ -498,11 +505,11 @@ openstack overcloud image upload --os-image-name overcloud-full-hardened.qcow2 -
 
 * Deployment command:
 
-```
+```diff
 (undercloud) [stack@dell430-33-undercloud-0-16-2 ~]$ cat deploy1.sh
 #!/bin/bash
 time openstack overcloud deploy --templates /usr/share/openstack-tripleo-heat-templates/ \
--r /home/stack/templates/rendered/roles_data.yaml \
++-r /home/stack/templates/rendered/roles_data.yaml \
 -e /home/stack/templates/rendered/environments/network-environment.yaml \
 -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml \
 -e /home/stack/containers-prepare-parameter.yaml \
@@ -513,7 +520,7 @@ time openstack overcloud deploy --templates /usr/share/openstack-tripleo-heat-te
 (undercloud) [stack@dell430-33-undercloud-0-16-2 ~]$
 ```
 
-
+```diff
 ###############################################################################
 # Role: ComputeSwRaid                                                         #
 ###############################################################################
@@ -532,7 +539,7 @@ time openstack overcloud deploy --templates /usr/share/openstack-tripleo-heat-te
     Storage:
       subnet: storage_subnet
   HostnameFormatDefault: '%stackname%-swnovacompute-%index%'
-  **ImageDefault: overcloud-full-hardened **
++  ImageDefault: overcloud-full-hardened
   RoleParametersDefault:
     TunedProfileName: "virtual-host"
   # Deprecated & backward-compatible values (FIXME: Make parameters consistent)
@@ -597,11 +604,11 @@ time openstack overcloud deploy --templates /usr/share/openstack-tripleo-heat-te
     - OS::TripleO::Services::OVNController
     - OS::TripleO::Services::OVNMetadataAgent
 ###############################################################################
-
+```
 
 * Scheduler hints:
 
-```
+```diff
 (undercloud) [stack@dell430-33-undercloud-0-16-2 ~]$ cat /home/stack/templates/extra/scheduler_hints_env.yaml
 parameter_defaults:
   ControllerSchedulerHints:
@@ -610,23 +617,23 @@ parameter_defaults:
   ComputeSchedulerHints:
     'capabilities:node': 'cmpt-%index%'
 
-  ComputeSwRaidSchedulerHints:
-    'capabilities:node': 'swcmpt-%index%'
++  ComputeSwRaidSchedulerHints:
++    'capabilities:node': 'swcmpt-%index%'
 (undercloud) [stack@dell430-33-undercloud-0-16-2 ~]$
 ```
 
 * Node info :
 
-```
+```diff
 (undercloud) [stack@dell430-33-undercloud-0-16-2 ~]$ cat /home/stack/templates/extra/node-info.yaml
 parameter_defaults:
   OvercloudControllerFlavor: baremetal
   OvercloudComputeFlavor: baremetal
-  OvercloudComputeSwRaidFlavor: baremetal
++  OvercloudComputeSwRaidFlavor: baremetal
 
   ControllerCount: 1
   ComputeCount: 1
-  ComputeSwRaidCount: 1
++  ComputeSwRaidCount: 1
 
   NtpServer: 192.168.24.1
   NeutronEnableDVR: false
@@ -635,14 +642,14 @@ parameter_defaults:
 
 * Deployed one:
 
-```
-+--------------------------------------+---------------------------+--------+------------------------+-------------------------+-----------+
+```diff
+--------------------------------------+---------------------------+--------+------------------------+-------------------------+-----------+
 | ID                                   | Name                      | Status | Networks               | Image                   | Flavor    |
-+--------------------------------------+---------------------------+--------+------------------------+-------------------------+-----------+
-| 4835c407-445c-41d4-9506-cdc6030ba12f | overcloud-swnovacompute-0 | ACTIVE | ctlplane=192.168.24.23 | overcloud-full-hardened | baremetal |
+--------------------------------------+---------------------------+--------+------------------------+-------------------------+-----------+
++| 4835c407-445c-41d4-9506-cdc6030ba12f | overcloud-swnovacompute-0 | ACTIVE | ctlplane=192.168.24.23 | overcloud-full-hardened | baremetal |
 | d8e6e27b-baf6-4b32-8cb7-88184de3f290 | overcloud-controller-0    | ACTIVE | ctlplane=192.168.24.9  | overcloud-full          | baremetal |
 | 7a888f19-1bce-445b-a76f-ab4bde684d0c | overcloud-novacompute-0   | ACTIVE | ctlplane=192.168.24.17 | overcloud-full          | baremetal |
-+--------------------------------------+---------------------------+--------+------------------------+-------------------------+-----------+
+--------------------------------------+---------------------------+--------+------------------------+-------------------------+-----------+
 ```
 
 ```
