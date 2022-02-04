@@ -336,9 +336,9 @@ vdb           252:16   0   60G  0 disk
 ```
 
 
-
-## scenerio 2: Enable sw-raid on already deployed environment. [with new role] - SCALEING COMPUTE NODE WITH SW-RAID.
-
+```diff
+- ## scenerio 2: Enable sw-raid on already deployed environment. [with new role] - SCALEING COMPUTE NODE WITH SW-RAID.
+```
 
 * RHOSP-16.2.1.GA is already deployed with some set of controller's and compute's
 
@@ -407,7 +407,7 @@ sudo podman restart ironic_conductor
 (undercloud) [stack@dell430-33-undercloud-0-16-2 ~]$
 ```
 
-* Import the node 
+* Import the node
 
 ```
 openstack overcloud node import /home/stack/instackenv2.json
@@ -484,7 +484,7 @@ total 1.7G
 (undercloud) [stack@dell430-33-undercloud-0-16-2 harden]$
 ```
 
-* Upload the image ot the glance. 
+* Upload the image ot the glance.
 
 ```
 openstack overcloud image upload --os-image-name overcloud-full-hardened.qcow2 --whole-disk
