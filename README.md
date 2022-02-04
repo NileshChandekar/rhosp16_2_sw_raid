@@ -41,6 +41,11 @@
 }
 ```
 
+* Import the node
+
+```
+openstack overcloud node import /home/stack/instackenv.json
+```
 
 * Introspect the node
 
