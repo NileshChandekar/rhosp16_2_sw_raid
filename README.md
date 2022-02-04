@@ -803,3 +803,12 @@ unused devices: <none>
 -       2     252       33        2      active sync   /dev/vdc1
 [root@overcloud-swnovacompute-1 ~]# 
 ```
+
+
+```diff
+- Bugzilla's
+```
+* https://bugzilla.redhat.com/show_bug.cgi?id=2032243
+* https://bugzilla.redhat.com/show_bug.cgi?id=1317918
+
+
