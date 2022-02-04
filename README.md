@@ -283,11 +283,11 @@ mdadm --detail /dev/md127
 /dev/md127:
            Version : 1.2
      Creation Time : Tue Feb  1 14:35:03 2022
-        + Raid Level : raid1
++        Raid Level : raid1
         Array Size : 62878720 (59.97 GiB 64.39 GB)
      Used Dev Size : 62878720 (59.97 GiB 64.39 GB)
-      + Raid Devices : 2
-     * Total Devices : 2
+      Raid Devices : 2
+     Total Devices : 2
        Persistence : Superblock is persistent
 
        Update Time : Tue Feb  1 16:34:26 2022
