@@ -1,6 +1,8 @@
-## sw-raid configuration with RHOSP-16.2.1.GA
+```diff
++ sw-raid configuration with RHOSP-16.2.1.GA
+```
 
-**scenerio 1: Deploy all nodes with sw-raid**
+**scenario 1: Deploy all nodes with sw-raid**
 
 * Deploy undercloud as per official documentation. [1] https://access.redhat.com/documentation/en-us/red_hat_openstack_platform/16.2/html-single/director_installation_and_usage/index
 * Registering nodes for the overcloud
@@ -337,7 +339,7 @@ vdb           252:16   0   60G  0 disk
 
 
 ```diff
-- ## scenerio 2: Enable sw-raid on already deployed environment. [with new role] - SCALEING COMPUTE NODE WITH SW-RAID.
+- scenario 2: Enable sw-raid on already deployed environment. [with new role] - SCALEING COMPUTE NODE WITH SW-RAID.
 ```
 
 * RHOSP-16.2.1.GA is already deployed with some set of controller's and compute's
