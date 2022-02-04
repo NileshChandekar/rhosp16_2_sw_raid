@@ -653,7 +653,7 @@ parameter_defaults:
 ```diff
 |--------------------------------------+---------------------------+--------+------------------------+-------------------------+-----------+
 | ID                                   | Name                      | Status | Networks               | Image                   | Flavor    |
---------------------------------------+---------------------------+--------+------------------------+-------------------------+-----------+
+|--------------------------------------+---------------------------+--------+------------------------+-------------------------+-----------+
 + 4835c407-445c-41d4-9506-cdc6030ba12f | overcloud-swnovacompute-0 | ACTIVE | ctlplane=192.168.24.23 | overcloud-full-hardened | baremetal |
 | d8e6e27b-baf6-4b32-8cb7-88184de3f290 | overcloud-controller-0    | ACTIVE | ctlplane=192.168.24.9  | overcloud-full          | baremetal |
 | 7a888f19-1bce-445b-a76f-ab4bde684d0c | overcloud-novacompute-0   | ACTIVE | ctlplane=192.168.24.17 | overcloud-full          | baremetal |
@@ -729,4 +729,77 @@ vdb           252:16   0   60G  0 disk
 /dev/md127p3: BLOCK_SIZE="2048" UUID="2022-02-02-05-09-28-00" LABEL="config-2" TYPE="iso9660" PARTUUID="df2e5cf4-03"
 /dev/md127: PTUUID="df2e5cf4" PTTYPE="dos"
 [root@overcloud-swnovacompute-0 ~]#
+```
+
+
+
+
+```diff
+- Notes
+```
+
+* If you have multipel disk in the server, and if you wanted to configure specific one, then that is not possible that is the limitation here, 
+
+```diff
+(undercloud) [stack@dell430-33-undercloud-0-16-2 ~]$ cat sw-raid/target2disk.yaml
+{
+   "logical_disks": [
+     {
+       "size_gb": "MAX",
+       "raid_level": "1",
+       "controller": "software",
+       "is_root_volume": true,
+       "physical_disks": [
+-         "/dev/disk/by-path/pci-0000:00:0b.0",
+-         "/dev/disk/by-path/pci-0000:00:0c.0"
+      ]       
+     }
+   ]
+ }
+
+(undercloud) [stack@dell430-33-undercloud-0-16-2 ~]$ 
+```
+
+* So here in this example I tried adding 2 disk only but after the deployment all disk considered by the deployment. 
+
+```diff
+[root@overcloud-swnovacompute-1 ~]# cat /proc/mdstat 
+Personalities : [raid1] 
++ md127 : active raid1 vdc1[2] vda1[0] vdb1[1]
++      62878720 blocks super 1.2 [3/3] [UUU]
+      
+unused devices: <none>
+[root@overcloud-swnovacompute-1 ~]# 
+```
+
+```diff
+[root@overcloud-swnovacompute-1 ~]# mdadm --detail /dev/md127
+/dev/md127:
+           Version : 1.2
+     Creation Time : Thu Feb  3 16:05:48 2022
++        Raid Level : raid1
+        Array Size : 62878720 (59.97 GiB 64.39 GB)
+     Used Dev Size : 62878720 (59.97 GiB 64.39 GB)
+      Raid Devices : 3
+     Total Devices : 3
+       Persistence : Superblock is persistent
+
+       Update Time : Fri Feb  4 08:37:03 2022
+             State : clean 
++    Active Devices : 3
+   Working Devices : 3
+    Failed Devices : 0
+     Spare Devices : 0
+
++ Consistency Policy : resync
+
+              Name : localhost.localdomain:0
+              UUID : 4f17db7b:cab50a67:496ce439:992f5206
+            Events : 141
+
+    Number   Major   Minor   RaidDevice State
+-       0     252        1        0      active sync   /dev/vda1
+-       1     252       17        1      active sync   /dev/vdb1
+-       2     252       33        2      active sync   /dev/vdc1
+[root@overcloud-swnovacompute-1 ~]# 
 ```
