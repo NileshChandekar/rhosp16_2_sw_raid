@@ -132,25 +132,28 @@ openstack overcloud image upload --image-path /home/stack/images/harden/ --whole
 
 ```diff
 (undercloud) [stack@dell430-33-undercloud-0-16-2 ~]$ openstack image list
-+--------------------------------------+---------------------------------+--------+
+--------------------------------------+---------------------------------+--------+
 | ID                                   | Name                            | Status |
-+--------------------------------------+---------------------------------+--------+
+--------------------------------------+---------------------------------+--------+
 + | 66742683-9d7c-42a4-bb30-df4601912247 | overcloud-full                  | active |
 | 05f0270b-8199-4b18-ad7e-b200c64285c2 | overcloud-full-initrd           | active |
 | 2e052cb4-66a4-429f-81fb-fabc17040120 | overcloud-full-vmlinuz          | active |
-+--------------------------------------+---------------------------------+--------+
+--------------------------------------+---------------------------------+--------+
 (undercloud) [stack@dell430-33-undercloud-0-16-2 ~]$
 ```
 
 
 ```
-for node in 49fa80a6-64a5-4f5b-b4da-857d6be5a1a0 8b6a0233-7c62-4794-be6d-d6c8d6dfa94f ; do openstack overcloud node configure $node ; done
+for node in 49fa80a6-64a5-4f5b-b4da-857d6be5a1a0 8b6a0233-7c62-4794-be6d-d6c8d6dfa94f ; \
+do openstack overcloud node configure $node ; \
+done
 ```
 
 
-* **Sw-Raid** configuration started from here:
+##  Sw-Raid** configuration started from here:
 
-* Required ironical configuration changes on **undercloud** node.
+* Required ironic configuration changes on **undercloud** node.
+
 ```
 grep  enabled_raid_interfaces /var/lib/config-data/puppet-generated/ironic/etc/ironic/ironic.conf
 
@@ -172,12 +175,14 @@ openstack baremetal node set --raid-interface agent 8b6a0233-7c62-4794-be6d-d6c8
 ```
 
 * Manage the node, for further configuration.
+
 ```
 openstack baremetal node manage  49fa80a6-64a5-4f5b-b4da-857d6be5a1a0
 openstack baremetal node manage  8b6a0233-7c62-4794-be6d-d6c8d6dfa94f
 ```
 
 * Set the target configuration [sw raid]
+
 ```
 openstack baremetal node set   --target-raid-config /home/stack/sw-raid/target.yaml 49fa80a6-64a5-4f5b-b4da-857d6be5a1a0
 openstack baremetal node set   --target-raid-config /home/stack/sw-raid/target.yaml 8b6a0233-7c62-4794-be6d-d6c8d6dfa94f
@@ -199,13 +204,15 @@ openstack baremetal node set   --target-raid-config /home/stack/sw-raid/target.y
 }
 ```
 
-* Clean the node bedore deployment,
+* Clean the node before deployment,
+
 ```
 openstack baremetal node clean  --clean-steps /home/stack/sw-raid/cleanstate.yaml 49fa80a6-64a5-4f5b-b4da-857d6be5a1a0
 openstack baremetal node clean  --clean-steps /home/stack/sw-raid/cleanstate.yaml 8b6a0233-7c62-4794-be6d-d6c8d6dfa94f
 ```
 
 * Move node from manage to available. [provide]
+
 ```
 openstack baremetal node provide 49fa80a6-64a5-4f5b-b4da-857d6be5a1a0
 openstack baremetal node provide 8b6a0233-7c62-4794-be6d-d6c8d6dfa94f
@@ -214,10 +221,12 @@ openstack baremetal node provide 8b6a0233-7c62-4794-be6d-d6c8d6dfa94f
 * Set the flavor as well,
 
 ```
-openstack flavor set --property "capabilities:raid_level"="1"  0f8deb91-2a64-4025-a75e-f70e28e89491
+openstack flavor set \
+--property "capabilities:raid_level"="1"  \
+0f8deb91-2a64-4025-a75e-f70e28e89491
 ```
 
-* Now at this moment the nodes should be in **available** state. [note down the previous step we manually moved nodes to manage state]
+* Now at this moment the nodes should be in **available** state. [note down in the previous step we manually moved nodes to manage state]
 
 ```
 +--------------------------------------+-----------------------------+--------------------------------------+-------------+--------------------+-------------+
@@ -255,14 +264,15 @@ time openstack overcloud deploy --templates /home/stack/templates/rendered/ \
 | e1b17fac-19e7-4487-a5b3-9540f6f68f3b | overcloud-controller-0  | ACTIVE | ctlplane=192.168.24.13 | overcloud-full 				 | baremetal |
 | 78a4605c-3ab3-49a8-91ac-c9ebccaeeb19 | overcloud-novacompute-0 | ACTIVE | ctlplane=192.168.24.21 | overcloud-full 				 | baremetal |
 +--------------------------------------+-------------------------+--------+------------------------+---------------------------------+-----------+
+```
 
 
 * Verification:
 
-```
+```diff
 cat /proc/mdstat
 Personalities : [raid1]
-md127 : active raid1 vdb1[1] vda1[0]
++ md127 : active raid1 vdb1[1] vda1[0]
       62878720 blocks super 1.2 [2/2] [UU]
 
 unused devices: <none>
